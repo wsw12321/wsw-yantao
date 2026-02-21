@@ -4,6 +4,12 @@ title: "研讨物理社 (Seminar Physics Club)"
 description: "一个唯心的唯物主义社团，探索物理的奥妙。"
 ---
 
+import { Image } from 'astro:assets';
+import logo_bw from '../assets/images/logo-bw.png';
+import logo_color from '../assets/images/logo-color.png';
+import logo_char from '../assets/images/logo-char.png';
+import mascot_xuankui from '../assets/images/mascot-xuankui.png';
+
 # 研讨物理社 (Seminar Physics Club)
 
 欢迎来到研讨物理社！这里是一个面向所有喜爱物理并想要讨论的学生开放的平台。社名中的“研讨”二字，寓意着社团轻松的讨论氛围和过硬的专业素养。
@@ -25,24 +31,24 @@ description: "一个唯心的唯物主义社团，探索物理的奥妙。"
 ## 视觉标识
 
 * **社徽 (LOGO)**：
-  <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
-    <img src="/src/assets/images/logo-bw.png" alt="研讨物理社社徽 - 经典黑白" style="max-width: 50%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-    <img src="/src/assets/images/logo-color.png" alt="研讨物理社社徽 - 炫彩渐变" style="max-width: 50%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-  </div>
+    {/* <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+      <img src="/src/assets/images/logo-bw.png" alt="研讨物理社社徽 - 经典黑白" style="max-width: 50%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+      <img src="/src/assets/images/logo-color.png" alt="研讨物理社社徽 - 炫彩渐变" style="max-width: 50%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+    </div> */}
+
+    <Image src={logo_bw} alt="研讨物理社社徽 - 经典黑白" style={{ maxWidth: '50%', width: 'auto', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+    <Image src={logo_color} alt="研讨物理社社徽 - 炫彩渐变" style={{ maxWidth: '50%', width: 'auto', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
   
   由三水丁设计并完善。左侧形似字母“Y”，代表受力分析图和坐标系；中间是一个静止在斜坡上的小滑块；右侧形似字母“T”。整体合起来代表“YT”（研讨）。
 
 * **文字LOGO**：
-  <div style="margin: 1rem 0;">
-    <img src="/src/assets/images/logo-char.png" alt="研讨物理社文字LOGO" style="max-width: 100%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-  </div>
+  <Image src={logo_char} alt="研讨物理社文字LOGO" style={{ maxWidth: '100%', width: 'auto', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
     
   25级小翊书。简洁的线条和现代感的字体，体现了社团的专业性和活力。
 
 * **吉祥物**：
-  <div style="margin: 1rem 0;">
-    <img src="/src/assets/images/mascot-xuankui.png" alt="研讨物理社吉祥物 - 璇夔" style="max-width: 100%; width: auto; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-  </div>
+  <Image src={mascot_xuankui} alt="研讨物理社吉祥物 - 璇夔" style={{ maxWidth: '100%', width: 'auto', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+
   名为《璇夔》（xuán kuí），由25级张子谦同学绘制。
 
 ---
