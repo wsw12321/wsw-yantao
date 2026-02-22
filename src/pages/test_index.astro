@@ -1,0 +1,65 @@
+---
+// src/pages/test_index.astro
+import Layout from '../layouts/login_Layout.astro';
+---
+
+<Layout title="首页">
+  <div class="hero">
+    <h1>欢迎来到我的网站</h1>
+    <p>这是一个使用 Astro + Cloudflare 构建的带有用户注册登录功能的网站</p>
+    <div class="buttons">
+      <a href="/register" class="btn btn-primary">注册账号</a>
+      <a href="/login" class="btn btn-secondary">登录</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    color: white;
+    max-width: 600px;
+  }
+  
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .btn {
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  
+  .btn-primary {
+    background: white;
+    color: #667eea;
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+</style>

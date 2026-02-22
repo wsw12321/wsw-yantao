@@ -1,0 +1,114 @@
+---
+// src/layouts/login_Layout.astro
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      nav {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: background 0.3s;
+      }
+      
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      
+      .nav-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+      }
+      
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <span class="nav-brand">🔐 我的网站</span>
+      <div id="nav-links">
+        <a href="/">首页</a>
+        <a href="/login">登录</a>
+        <a href="/register">注册</a>
+      </div>
+    </nav>
+    <main>
+      <slot />
+    </main>
+
+    <script>
+      // 检查登录状态，更新导航栏
+      async function updateNav() {
+        try {
+          const res = await fetch('/api/me');
+          const data = await res.json();
+          const navLinks = document.getElementById('nav-links');
+          
+          if (data.authenticated && navLinks) {
+            navLinks.innerHTML = `
+              <a href="/">首页</a>
+              <a href="/dashboard">控制台</a>
+              <span style="color: white; margin: 0 0.5rem;">欢迎, ${data.user.username}</span>
+              <a href="#" id="logout-btn">登出</a>
+            `;
+            
+            document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+              e.preventDefault();
+              await fetch('/api/logout', { method: 'POST' });
+              window.location.href = '/';
+            });
+          }
+        } catch (e) {
+          // 未登录状态，保持默认导航
+        }
+      }
+      
+      updateNav();
+    </script>
+  </body>
+</html>
