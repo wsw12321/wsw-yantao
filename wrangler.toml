@@ -1,0 +1,8 @@
+name = "my-auth-app"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wsw-yantao-db"
+database_id = "510a7c2d-ffd6-4320-a385-bea8b8dc85e8"
