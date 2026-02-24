@@ -1,4 +1,3 @@
-
 ---
 // src/layouts/login_Layout.astro
 interface Props {
@@ -39,122 +38,77 @@ const { title } = Astro.props;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        position: relative;
+        flex-wrap: wrap;          /* 移动端允许换行 */
       }
 
       .nav-brand {
         font-size: 1.5rem;
         font-weight: bold;
         color: white;
-        z-index: 10;
       }
 
-      /* 导航链接容器 */
-      #nav-links {
+      /* ===== 汉堡按钮（桌面端隐藏） ===== */
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: white;
+        padding: 0.25rem;
+        line-height: 1;
+      }
+
+      /* ===== 导航链接区域 ===== */
+      .main-nav {
         display: flex;
-        align-items: center;
         gap: 0.25rem;
+        align-items: center;
       }
 
-      #nav-links a,
-      #nav-links span {
+      .main-nav a,
+      .main-nav span {
         color: white;
         text-decoration: none;
         padding: 0.5rem 1rem;
         border-radius: 6px;
-        transition: background 0.3s;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
         white-space: nowrap;
       }
 
-      #nav-links a:hover {
+      .main-nav a:hover {
         background: rgba(255, 255, 255, 0.2);
       }
 
-      /* ===== 汉堡按钮 ===== */
-      .hamburger {
-        display: none;           /* 桌面端隐藏 */
-        flex-direction: column;
-        justify-content: center;
-        gap: 5px;
-        width: 36px;
-        height: 36px;
-        cursor: pointer;
-        z-index: 10;
-        background: none;
-        border: none;
-        padding: 4px;
-      }
-
-      .hamburger span {
-        display: block;
-        width: 100%;
-        height: 3px;
-        background: white;
-        border-radius: 3px;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        transform-origin: center;
-      }
-
-      /* 汉堡 → 叉号动画 */
-      .hamburger.active span:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-      }
-      .hamburger.active span:nth-child(2) {
-        opacity: 0;
-      }
-      .hamburger.active span:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
-      }
-
-      /* 遮罩层 */
-      .nav-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 4;
-      }
-      .nav-overlay.active {
-        display: block;
-      }
-
-      /* ===== 移动端样式 ===== */
-      @media (max-width: 640px) {
-        .hamburger {
-          display: flex;
+      /* ===== 移动端响应式 ===== */
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: block;        /* 显示汉堡按钮 */
         }
 
-        #nav-links {
-          /* 默认隐藏 */
-          position: fixed;
-          top: 0;
-          right: -280px;        /* 移出屏幕 */
-          width: 260px;
-          height: 100vh;
+        .main-nav {
+          display: none;         /* 默认隐藏导航 */
           flex-direction: column;
-          align-items: stretch;
-          background: linear-gradient(180deg, #5a67d8 0%, #6b46c1 100%);
-          padding: 5rem 1.5rem 2rem;
-          gap: 0.5rem;
-          z-index: 5;
-          transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: -4px 0 30px rgba(0, 0, 0, 0.3);
-          overflow-y: auto;
+          width: 100%;
+          padding-top: 0.75rem;
+          gap: 0.25rem;
         }
 
-        #nav-links.open {
-          right: 0;             /* 滑入 */
+        .main-nav.open {
+          display: flex;         /* 点击后展开 */
         }
 
-        #nav-links a,
-        #nav-links span {
-          padding: 0.85rem 1rem;
-          border-radius: 8px;
-          font-size: 1.05rem;
+        .main-nav a,
+        .main-nav span {
+          padding: 0.7rem 1rem;
+          border-radius: 6px;
           text-align: left;
+          width: 100%;
         }
 
-        #nav-links a:hover {
+        .main-nav a:hover {
           background: rgba(255, 255, 255, 0.15);
         }
       }
@@ -175,63 +129,47 @@ const { title } = Astro.props;
       <span class="nav-brand">🔐 YT-Physics</span>
 
       <!-- 汉堡按钮（移动端可见） -->
-      <button class="hamburger" id="hamburger-btn" aria-label="菜单">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <button class="menu-toggle" id="menu-toggle" aria-label="菜单">☰</button>
 
       <!-- 导航链接 -->
-      <div id="nav-links">
+      <div class="main-nav" id="nav-links">
         <a href="/">首页</a>
         <a href="/login">登录</a>
         <a href="/register">注册</a>
       </div>
     </nav>
 
-    <!-- 遮罩层 -->
-    <div class="nav-overlay" id="nav-overlay"></div>
-
     <main>
       <slot />
     </main>
 
     <script>
-      // ===== 折叠菜单逻辑 =====
-      function initHamburger() {
-        const btn     = document.getElementById('hamburger-btn');
-        const links   = document.getElementById('nav-links');
-        const overlay = document.getElementById('nav-overlay');
+      // ===== 汉堡菜单切换 =====
+      function initMenu() {
+        const toggle = document.getElementById('menu-toggle');
+        const nav = document.getElementById('nav-links');
+        if (!toggle || !nav) return;
 
-        if (!btn || !links || !overlay) return;
+        toggle.addEventListener('click', () => {
+          const isOpen = nav.classList.toggle('open');
+          toggle.textContent = isOpen ? '✕' : '☰';
+        });
 
-        function toggle() {
-          btn.classList.toggle('active');
-          links.classList.toggle('open');
-          overlay.classList.toggle('active');
-        }
-
-        function close() {
-          btn.classList.remove('active');
-          links.classList.remove('open');
-          overlay.classList.remove('active');
-        }
-
-        btn.addEventListener('click', toggle);
-        overlay.addEventListener('click', close);
-
-        // 点击菜单内的链接后自动关闭
-        links.addEventListener('click', (e) => {
-          if ((e.target as HTMLElement).tagName === 'A') close();
+        // 点击链接后自动收起
+        nav.addEventListener('click', (e) => {
+          if ((e.target as HTMLElement).tagName === 'A') {
+            nav.classList.remove('open');
+            toggle.textContent = '☰';
+          }
         });
       }
 
-      initHamburger();
+      initMenu();
 
       // ===== 登录状态检测 =====
       async function updateNav() {
         try {
-          const res  = await fetch('/api/me');
+          const res = await fetch('/api/me');
           const data = await res.json();
           const navLinks = document.getElementById('nav-links');
 
@@ -239,7 +177,7 @@ const { title } = Astro.props;
             navLinks.innerHTML = `
               <a href="/">首页</a>
               <a href="/dashboard">控制台</a>
-              <span style="color: white;">欢迎, ${data.user.username}</span>
+              <span>欢迎, ${data.user.username}</span>
               <a href="#" id="logout-btn">登出</a>
             `;
 
@@ -248,9 +186,6 @@ const { title } = Astro.props;
               await fetch('/api/logout', { method: 'POST' });
               window.location.href = '/';
             });
-
-            // 内容替换后重新绑定 "点击链接关闭菜单"
-            initHamburger();
           }
         } catch {
           // 未登录，保持默认
