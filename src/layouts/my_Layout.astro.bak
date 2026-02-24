@@ -1,0 +1,134 @@
+---
+// src/layouts/my_Layout.astro
+// 这里接收来自 MDX 文件 frontmatter 的属性
+const { frontmatter } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{frontmatter.title}</title>
+    <meta name="description" content={frontmatter.description} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-content">
+        <span class="logo-text">研讨物理社 YT-Physics</span>
+      </div>
+    </header>
+
+    <main class="content-wrapper">
+      <article class="prose">
+        <slot />
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p>© {new Date().getFullYear()} 研讨物理社. 探索物理的奥妙。</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* 全局重置与基础变量 */
+  :root {
+    --primary-color: #2563eb;
+    --text-color: #374151;
+    --bg-color: #f3f4f6;
+    --content-bg: #ffffff;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+
+  /* 导航栏与页脚样式 */
+  .site-header {
+    background-color: var(--content-bg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+  }
+
+  .site-footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  /* 内容区排版 (Prose) */
+  .content-wrapper {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .prose {
+    background: var(--content-bg);
+    padding: 2rem 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 针对 MDX 生成的 HTML 标签进行美化 */
+  .prose h1, .prose h2, .prose h3 {
+    color: #111827;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.3em;
+  }
+
+  .prose h1 {
+    margin-top: 0;
+    font-size: 2.25rem;
+    border-bottom: none;
+  }
+
+  .prose p {
+    margin-bottom: 1.25em;
+  }
+
+  .prose ul, .prose ol {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+  }
+
+  .prose li {
+    margin-bottom: 0.5em;
+  }
+
+  .prose hr {
+    border: 0;
+    height: 1px;
+    background: #e5e7eb;
+    margin: 2rem 0;
+  }
+
+  .prose strong {
+    color: #111827;
+    font-weight: 600;
+  }
+</style>
