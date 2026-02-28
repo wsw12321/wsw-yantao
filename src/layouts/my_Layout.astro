@@ -14,26 +14,21 @@ const { frontmatter } = Astro.props;
     <meta name="description" content={frontmatter.description} />
   </head>
   <body>
-    <!-- ✅ 修改了这里的 header -->
+    <!-- ✅ 动态粒子背景 Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
     <header class="site-header">
       <div class="header-content">
         <a href="/" class="active"><span class="logo-text">研讨物理社 YT-Physics</span></a>
         <nav class="main-nav">
           <a href="/">首页</a>
-          <!-- <a href="/about">关于我们</a>
-          <a href="/courses">社课</a>
-          <a href="/members">成员</a>
-          <a href="/gallery">相册</a>
-          <a href="/contact">联系我们</a> -->
           <a href="/login">登录</a>
           <a href="/TODO">关于我们</a>
           <a href="/TODO">社课</a>
           <a href="/TODO">成员</a>
           <a href="/TODO">相册</a>
           <a href="/TODO">联系我们</a>
-
         </nav>
-        <!-- 移动端汉堡菜单按钮 -->
         <button class="menu-toggle" aria-label="切换菜单">☰</button>
       </div>
     </header>
@@ -56,6 +51,184 @@ const { frontmatter } = Astro.props;
         nav?.classList.toggle('open');
       });
     </script>
+
+    <!-- ✅ 动态粒子背景脚本 -->
+    <script>
+      const canvas = document.getElementById('particle-canvas') as HTMLCanvasElement;
+      const ctx = canvas.getContext('2d')!;
+
+      // ===== 可调参数 =====
+      const CONFIG = {
+        particleCount: 80,        // 粒子数量
+        maxSpeed: 0.4,            // 最大移动速度
+        particleRadius: 2,        // 粒子半径
+        connectionDistance: 150,  // 连线最大距离
+        mouseRadius: 200,         // 鼠标影响半径
+        mouseRepelForce: 0.02,    // 鼠标排斥力度
+        particleColor: '99, 102, 241',   // 粒子颜色 (Indigo)
+        lineColor: '99, 102, 241',       // 连线颜色
+        lineOpacity: 0.15,               // 连线最大不透明度
+        particleOpacity: 0.6,            // 粒子不透明度
+      };
+
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+      let mouseX = -9999;
+      let mouseY = -9999;
+      let animationId: number;
+
+      interface Particle {
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        radius: number;
+      }
+
+      const particles: Particle[] = [];
+
+      // 初始化粒子
+      function initParticles() {
+        particles.length = 0;
+        // 根据屏幕面积动态调整粒子数量
+        const area = width * height;
+        const count = Math.min(CONFIG.particleCount, Math.floor(area / 12000));
+
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * CONFIG.maxSpeed * 2,
+            vy: (Math.random() - 0.5) * CONFIG.maxSpeed * 2,
+            radius: CONFIG.particleRadius + Math.random() * 1.5,
+          });
+        }
+      }
+
+      // 更新粒子位置
+      function updateParticles() {
+        for (const p of particles) {
+          // 鼠标排斥效果
+          const dx = p.x - mouseX;
+          const dy = p.y - mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONFIG.mouseRadius && dist > 0) {
+            const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
+            p.vx += (dx / dist) * force * CONFIG.mouseRepelForce;
+            p.vy += (dy / dist) * force * CONFIG.mouseRepelForce;
+          }
+
+          // 限制速度
+          const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          if (speed > CONFIG.maxSpeed) {
+            p.vx = (p.vx / speed) * CONFIG.maxSpeed;
+            p.vy = (p.vy / speed) * CONFIG.maxSpeed;
+          }
+
+          // 移动
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // 边界反弹
+          if (p.x < 0) { p.x = 0; p.vx *= -1; }
+          if (p.x > width) { p.x = width; p.vx *= -1; }
+          if (p.y < 0) { p.y = 0; p.vy *= -1; }
+          if (p.y > height) { p.y = height; p.vy *= -1; }
+        }
+      }
+
+      // 绘制
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+
+        // 绘制粒子间连线
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < CONFIG.connectionDistance) {
+              const opacity = (1 - dist / CONFIG.connectionDistance) * CONFIG.lineOpacity;
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(${CONFIG.lineColor}, ${opacity})`;
+              ctx.lineWidth = 0.8;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // 绘制鼠标与粒子的连线
+        for (const p of particles) {
+          const dx = p.x - mouseX;
+          const dy = p.y - mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONFIG.mouseRadius) {
+            const opacity = (1 - dist / CONFIG.mouseRadius) * 0.3;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(${CONFIG.lineColor}, ${opacity})`;
+            ctx.lineWidth = 0.6;
+            ctx.moveTo(mouseX, mouseY);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+          }
+        }
+
+        // 绘制粒子
+        for (const p of particles) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${CONFIG.particleColor}, ${CONFIG.particleOpacity})`;
+          ctx.fill();
+        }
+      }
+
+      // 动画循环
+      function animate() {
+        updateParticles();
+        draw();
+        animationId = requestAnimationFrame(animate);
+      }
+
+      // 窗口大小变化
+      function handleResize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        initParticles();
+      }
+
+      // 鼠标移动
+      function handleMouseMove(e: MouseEvent) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+
+      // 鼠标离开
+      function handleMouseLeave() {
+        mouseX = -9999;
+        mouseY = -9999;
+      }
+
+      // 性能优化：页面不可见时暂停动画
+      function handleVisibility() {
+        if (document.hidden) {
+          cancelAnimationFrame(animationId);
+        } else {
+          animate();
+        }
+      }
+
+      // 启动
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseleave', handleMouseLeave);
+      document.addEventListener('visibilitychange', handleVisibility);
+
+      initParticles();
+      animate();
+    </script>
   </body>
 </html>
 
@@ -75,9 +248,30 @@ const { frontmatter } = Astro.props;
     line-height: 1.6;
   }
 
+  /* ✅ 粒子画布样式 */
+  #particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;   /* 不阻挡页面点击 */
+  }
+
+  /* ✅ 让所有内容浮在画布之上 */
+  .site-header,
+  .content-wrapper,
+  .site-footer {
+    position: relative;
+    z-index: 1;
+  }
+
   /* ========== 导航栏样式 ========== */
   .site-header {
-    background-color: var(--content-bg);
+    background-color: rgba(255, 255, 255, 0.85);  /* ✅ 半透明，让背景微微可见 */
+    backdrop-filter: blur(10px);                    /* ✅ 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -93,7 +287,6 @@ const { frontmatter } = Astro.props;
     justify-content: space-between;
   }
 
-  /* Logo 变成可点击的链接 */
   .logo-text {
     font-weight: bold;
     font-size: 1.2rem;
@@ -102,7 +295,6 @@ const { frontmatter } = Astro.props;
     white-space: nowrap;
   }
 
-  /* ✅ 新增：导航链接区域 */
   .main-nav {
     display: flex;
     gap: 0.25rem;
@@ -125,13 +317,11 @@ const { frontmatter } = Astro.props;
     color: var(--primary-color);
   }
 
-  /* 当前页面高亮（可选，需手动加 class="active"） */
   .main-nav a.active {
     background-color: var(--primary-color);
     color: #ffffff;
   }
 
-  /* 汉堡按钮，桌面端隐藏 */
   .menu-toggle {
     display: none;
     background: none;
@@ -141,7 +331,6 @@ const { frontmatter } = Astro.props;
     color: var(--text-color);
   }
 
-  /* ✅ 移动端响应式 */
   @media (max-width: 768px) {
     .header-content {
       flex-wrap: wrap;
@@ -152,14 +341,14 @@ const { frontmatter } = Astro.props;
     }
 
     .main-nav {
-      display: none;           /* 默认隐藏 */
+      display: none;
       flex-direction: column;
       width: 100%;
       padding-top: 0.5rem;
     }
 
     .main-nav.open {
-      display: flex;           /* 点击汉堡按钮后展开 */
+      display: flex;
     }
 
     .main-nav a {
@@ -168,7 +357,7 @@ const { frontmatter } = Astro.props;
     }
   }
 
-  /* ========== 以下保持原样 ========== */
+  /* ========== 内容区域 ========== */
   .site-footer {
     text-align: center;
     padding: 2rem;
@@ -184,7 +373,9 @@ const { frontmatter } = Astro.props;
   }
 
   .prose {
-    background: var(--content-bg);
+    background: rgba(255, 255, 255, 0.15);  /* ✅ 微透明，让粒子若隐若现 */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     padding: 2rem 3rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
