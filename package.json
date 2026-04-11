@@ -16,7 +16,6 @@
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260228.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "wrangler": "^4.67.0"
