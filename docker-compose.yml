@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /workspace
+    ports:
+      - "4321:4321"
+    environment:
+      ASTRO_TELEMETRY_DISABLED: "1"
+      CHOKIDAR_USEPOLLING: "true"
+      npm_config_store_dir: /home/node/.local/share/pnpm/store
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+      - pnpm_store:/home/node/.local/share/pnpm/store
+    command: sh -lc "pnpm install --frozen-lockfile && pnpm dev --host 0.0.0.0"
+
+volumes:
+  node_modules:
+  pnpm_store:

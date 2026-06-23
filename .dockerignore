@@ -1,0 +1,17 @@
+node_modules
+.pnpm-store
+dist
+.astro
+.wrangler
+.git
+.gitignore
+.vscode
+.devcontainer
+
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.env
+.env.*
